@@ -65,6 +65,10 @@ if (count($repoResult) > 0) {
     }
 }
 
+// Sort by watchers
+require_once("../tool/sorter.php");
+usort($repos, 'wcomparer');
+
 echo json_encode(
     array(
         "state"=> 0,

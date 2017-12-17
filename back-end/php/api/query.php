@@ -140,6 +140,10 @@ foreach ($repoResult as $repo) {
     array_push($repos, $temp);
 }
 
+// Sort by watchers
+require_once("../tool/sorter.php");
+usort($repos, 'wcomparer');
+
 // Save all repos to DB
 
 echo json_encode(
