@@ -1,6 +1,6 @@
 <?php
 /**
- * [GET] /api/userexist.php
+ * [POST] /api/userexist.php
  * Param:
  *      username: string
  *

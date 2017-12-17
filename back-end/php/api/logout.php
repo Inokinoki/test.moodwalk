@@ -10,7 +10,7 @@
  *          "description": String
  *      }
  */
-if (empty($_GET["token"])){
+if ((empty($_GET["token"]) && empty($_COOKIE["uuid"]))){
     echo json_encode(
         array(
             "state"=> 3,
@@ -20,7 +20,10 @@ if (empty($_GET["token"])){
     exit();
 }
 
-$uuid = $_GET["token"];
+if (isset($_GET["token"]))
+    $uuid = $_GET["token"];
+if (isset($_COOKIE["uuid"]))
+    $uuid = $_COOKIE["uuid"];
 require_once("../tool/database.php");
 $database = new Database();
 

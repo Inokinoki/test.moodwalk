@@ -12,7 +12,7 @@
  *          "info": String(url)
  *      }
  */
-if (empty($_POST["token"]) || empty($_POST["user"])){
+if ((empty($_POST["token"]) && empty($_COOKIE["uuid"]))  || empty($_POST["user"])){
     echo json_encode(
         array(
             "state"=> 3,
@@ -22,7 +22,10 @@ if (empty($_POST["token"]) || empty($_POST["user"])){
     exit();
 }
 
-$uuid = $_POST["token"];
+if (isset($_POST["token"]))
+    $uuid = $_POST["token"];
+if (isset($_COOKIE["uuid"]))
+    $uuid = $_COOKIE["uuid"];
 $user = $_POST["user"];
 
 require_once("../tool/database.php");
