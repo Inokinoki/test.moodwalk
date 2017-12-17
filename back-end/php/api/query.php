@@ -131,7 +131,7 @@ foreach ($repoResult as $repo) {
             //	id	name	description	watcher	searcher id	star
             $database->query("INSERT INTO record 
                 (`id`, `name`, `description`, `watcher`, `searcher`, `star`, `githubid`) 
-                VALUES (null, '".$temp["name"]."', '".$temp["description"]."',
+                VALUES (null, '".$temp["name"]."', '".addslashes(sprintf("%s",$temp["description"]))."',
                 '".$temp["watchers"]."', '$uid', 'false', '".$temp["id"]."')");
         }
     }
