@@ -42,8 +42,7 @@ if (!$database->exist("uuid", $uuid, "accounts")) {
 
 // Get searcher info
 $uidResult = $database->query("SELECT id FROM `accounts` WHERE uuid = '$uuid'");
-$uidResult = mysqli_fetch_array($uidResult);
-if (count($uidResult) < 1) {
+if (mysqli_num_rows($uidResult) < 1) {
     echo json_encode(
         array(
             "state"=> 1,
@@ -52,8 +51,8 @@ if (count($uidResult) < 1) {
     );
     exit();
 }
-
-$uid = $uidResult[0];
+$uidResult = mysqli_fetch_array($uidResult);
+$uid = $uidResult['id'];
 
 // Check existence of record
 $recordResult = $database->query("SELECT id FROM `record` WHERE githubid = '$githubid' AND searcher = '$uid'");

@@ -40,8 +40,8 @@ if (!$database->exist("username", $username, "accounts")) {
 
 // Query user
 $result = $database->query("SELECT * FROM `accounts` WHERE username = '$username'");
-$result = mysqli_fetch_array($result);
-if (count($result) > 0){
+if (mysqli_num_rows($result) > 0){
+    $result = mysqli_fetch_array($result);
     if ( $result["password"] == $password ){
         // Right password, generate uuid and set it to cookies
         $id = $result['id'];

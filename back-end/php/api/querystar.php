@@ -25,7 +25,6 @@ if (isset($_POST["token"]))
     $uuid = $_POST["token"];
 if (isset($_COOKIE["uuid"]))
     $uuid = $_COOKIE["uuid"];
-$user = $_POST["user"];
 
 require_once("../tool/database.php");
 $database = new Database();
@@ -51,18 +50,15 @@ if (count($uidResult) > 0) {
 $repos = array();
 
 // Query all
-$repoResult = $database->query("SELECT * FROM `record` WHERE searcher = '$uid' AND star = '1'");
-$repoResult = mysqli_fetch_array($repoResult);
-if (count($repoResult) > 0) {
-    foreach ($repoResult as $repo) {
-        array_push($repos, array(
-            "name" => $repo["name"],
-            "description" => $repo["description"],
-            "watchers" => $repo["watcher"],
-            "id" => $repo["githubid"],
-            "star" => $repo["star"]
-        ));
-    }
+$repoResult = $database->query("SELECT * FROM `record` WHERE `searcher` = '$uid' AND star = '1'");
+while ($repo = mysqli_fetch_array($repoResult)){
+    array_push($repos, array(
+        "name" => $repo["name"],
+        "description" => $repo["description"],
+        "watchers" => $repo["watcher"],
+        "id" => $repo["githubid"],
+        "star" => $repo["star"]
+    ));
 }
 
 // Sort by watchers

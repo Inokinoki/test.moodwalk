@@ -44,9 +44,9 @@ if (!$database->exist("uuid", $uuid, "accounts")) {
 
 // Get searcher info
 $uidResult = $database->query("SELECT id FROM `accounts` WHERE uuid = '$uuid'");
-$uidResult = mysqli_fetch_array($uidResult);
-if (count($uidResult) > 0) {
-    $uid = $uidResult[0];
+if (mysqli_num_rows($uidResult) > 0) {
+    $uidResult = mysqli_fetch_array($uidResult);
+    $uid = $uidResult["id"];
 }
 
 // Prepare
@@ -122,9 +122,9 @@ foreach ($repoResult as $repo) {
     if (isset($temp["id"]) && isset($uid)){
         // First user info
         $starResult = $database->query("SELECT star FROM `record` WHERE githubid = '".$temp["id"]."' AND searcher = '$uid'");
-        $startArray = mysqli_fetch_array($starResult);
-        if (count($startArray) > 0){
-            $temp["star"] = $startArray[0];
+        if (mysqli_num_rows($starResult) > 0){
+            $starArray = mysqli_fetch_array($starResult);
+            $temp["star"] = $starArray["star"];
             // echo "DEBUG:".$temp["id"]." exist\n";
         } else {
             // Not exist in the DB
