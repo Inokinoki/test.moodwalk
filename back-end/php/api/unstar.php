@@ -59,7 +59,7 @@ $uid = $uidResult['id'];
 // Check existence of record
 $recordResult = $database->query("SELECT id FROM `record` WHERE githubid = '$githubid' AND searcher = '$uid'");
 
-if (mysqli_num_rows($recordArray) < 1){
+if (mysqli_num_rows($recordResult) < 1){
     echo json_encode(
         array(
             "state"=> 2,
