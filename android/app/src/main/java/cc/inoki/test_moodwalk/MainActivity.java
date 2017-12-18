@@ -1,5 +1,6 @@
 package cc.inoki.test_moodwalk;
 
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -7,6 +8,9 @@ import android.media.Image;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
@@ -91,7 +95,30 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
     }
 
     @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater mi = getMenuInflater();
+        mi.inflate(R.menu.menu_main, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == R.id.menu_main_star){
+            startActivity(new Intent(this, StarActivity.class));
+        }
+        return true;
+    }
+
+    @Override
     public boolean onItemLongClick(AdapterView<?> adapterView, View view, int i, long l) {
+        if (view.getId() == R.id.search_repo){
+            if (this.list.size() > i){
+                Repo repo = this.list.get(i);
+                if (repo != null){
+                    Toast.makeText(this, repo.getId()+"", Toast.LENGTH_SHORT).show();
+                }
+            }
+        }
         return false;
     }
 
