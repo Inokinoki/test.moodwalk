@@ -117,7 +117,7 @@ foreach ($repoResult as $repo) {
         }
     }
     // Init star
-    $temp["star"] = false;
+    $temp["star"] = 0;
     // Link with database
     if (isset($temp["id"]) && isset($uid)){
         // First user info
