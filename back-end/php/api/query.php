@@ -132,7 +132,7 @@ foreach ($repoResult as $repo) {
             $database->query("INSERT INTO record 
                 (`id`, `name`, `description`, `watcher`, `searcher`, `star`, `githubid`) 
                 VALUES (null, '".$temp["name"]."', '".addslashes(sprintf("%s",$temp["description"]))."',
-                '".$temp["watchers"]."', '$uid', 'false', '".$temp["id"]."')");
+                '".$temp["watchers"]."', '$uid', '0', '".$temp["id"]."')");
         }
     }
     // Clear temp id
