@@ -60,7 +60,7 @@
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 17);
+/******/ 	return __webpack_require__(__webpack_require__.s = 16);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -261,9 +261,9 @@ process.umask = function() { return 0; };
 /* WEBPACK VAR INJECTION */(function(process) {
 
 if (process.env.NODE_ENV === 'production') {
-  module.exports = __webpack_require__(18);
+  module.exports = __webpack_require__(17);
 } else {
-  module.exports = __webpack_require__(19);
+  module.exports = __webpack_require__(18);
 }
 
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(0)))
@@ -577,7 +577,7 @@ module.exports = warning;
 if (process.env.NODE_ENV !== 'production') {
   var invariant = __webpack_require__(5);
   var warning = __webpack_require__(6);
-  var ReactPropTypesSecret = __webpack_require__(20);
+  var ReactPropTypesSecret = __webpack_require__(19);
   var loggedTypeFailures = {};
 }
 
@@ -876,7 +876,7 @@ module.exports = shallowEqual;
  * 
  */
 
-var isTextNode = __webpack_require__(23);
+var isTextNode = __webpack_require__(22);
 
 /*eslint-disable no-bitwise */
 
@@ -935,6 +935,45 @@ module.exports = focusNode;
 
 /***/ }),
 /* 14 */
+/***/ (function(module, exports) {
+
+var charenc = {
+  // UTF-8 encoding
+  utf8: {
+    // Convert a string to a byte array
+    stringToBytes: function(str) {
+      return charenc.bin.stringToBytes(unescape(encodeURIComponent(str)));
+    },
+
+    // Convert a byte array to a string
+    bytesToString: function(bytes) {
+      return decodeURIComponent(escape(charenc.bin.bytesToString(bytes)));
+    }
+  },
+
+  // Binary encoding
+  bin: {
+    // Convert a string to a byte array
+    stringToBytes: function(str) {
+      for (var bytes = [], i = 0; i < str.length; i++)
+        bytes.push(str.charCodeAt(i) & 0xFF);
+      return bytes;
+    },
+
+    // Convert a byte array to a string
+    bytesToString: function(bytes) {
+      for (var str = [], i = 0; i < bytes.length; i++)
+        str.push(String.fromCharCode(bytes[i]));
+      return str.join('');
+    }
+  }
+};
+
+module.exports = charenc;
+
+
+/***/ }),
+/* 15 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -978,113 +1017,112 @@ var Repo = function (_React$Component) {
     _createClass(Repo, [{
         key: "star",
         value: function star() {
-            $.post("./api/addstar.php", {
-                id: this.props.repoid
-            }, function (data, status) {
-                if (status) {
-                    var result = JSON.parse(data);
-                    if (result["state"] == "0") {
-                        // Star OK
-                        this.setState({ isStared: true });
+            if (this.props.isLogin == true) {
+                $.post("./api/addstar.php", {
+                    id: this.props.repoid,
+                    token: this.props.token
+                }, function (data, status) {
+                    if (status) {
+                        var result = JSON.parse(data);
+                        if (result["state"] == "0") {
+                            // Star OK
+                            this.setState({ isStared: true });
+                            this.props.reporefresh();
+                        }
                     }
-                }
-            }.bind(this));
+                }.bind(this));
+            }
         }
     }, {
         key: "unstar",
         value: function unstar() {
-            $.post("./api/unstar.php", {
-                id: this.props.repoid
-            }, function (data, status) {
-                if (status) {
-                    var result = JSON.parse(data);
-                    if (result["state"] == "0") {
-                        // Unstar OK
-                        this.setState({ isStared: false });
-                        if (this.props.reposearched == false) {
-                            // Hide
-                            this.setState({ display: false });
+            if (this.props.isLogin == true) {
+                $.post("./api/unstar.php", {
+                    id: this.props.repoid,
+                    token: this.props.token
+                }, function (data, status) {
+                    if (status) {
+                        var result = JSON.parse(data);
+                        if (result["state"] == "0") {
+                            // Unstar OK
+                            this.setState({ isStared: false });
                             this.props.reporefresh();
                         }
                     }
-                }
-            }.bind(this));
+                }.bind(this));
+            }
         }
     }, {
         key: "render",
         value: function render() {
-            if (this.state.display == true) {
-                if (this.state.isStared == true) {
-                    // Stared repo
-                    return _react2.default.createElement(
-                        "div",
-                        { className: "col-xs-10 col-sm-9 col-md-8 col-lg-7" },
+            if (this.state.isStared == true) {
+                // Stared repo
+                return _react2.default.createElement(
+                    "div",
+                    { className: "col-xs-10 col-sm-9 col-md-8 col-lg-7" },
+                    _react2.default.createElement(
+                        "h3",
+                        null,
+                        this.props.reponame,
                         _react2.default.createElement(
-                            "h3",
-                            null,
-                            this.props.reponame,
-                            _react2.default.createElement(
-                                "a",
-                                { onClick: this.unstar, href: "#!" },
-                                _react2.default.createElement("span", { className: "glyphicon glyphicon-star" })
-                            )
-                        ),
-                        _react2.default.createElement(
-                            "p",
-                            null,
-                            "Github ID: ",
-                            this.props.repoid
-                        ),
-                        _react2.default.createElement(
-                            "p",
-                            null,
-                            "Description: ",
-                            this.props.repodesc
-                        ),
-                        _react2.default.createElement(
-                            "p",
-                            null,
-                            "Watchers Count: ",
-                            this.props.repowatcher
+                            "a",
+                            { onClick: this.unstar, href: "#!" },
+                            _react2.default.createElement("span", { className: "glyphicon glyphicon-star" })
                         )
-                    );
-                } else {
-                    // Unstared repo
-                    return _react2.default.createElement(
-                        "div",
-                        { className: "col-xs-10 col-sm-9 col-md-8 col-lg-7" },
-                        _react2.default.createElement(
-                            "h3",
-                            null,
-                            this.props.reponame,
-                            _react2.default.createElement(
-                                "a",
-                                { onClick: this.star, href: "#!" },
-                                _react2.default.createElement("span", { className: "glyphicon glyphicon-star-empty" })
-                            )
-                        ),
-                        _react2.default.createElement(
-                            "p",
-                            null,
-                            "Github ID: ",
-                            this.props.repoid
-                        ),
-                        _react2.default.createElement(
-                            "p",
-                            null,
-                            "Description: ",
-                            this.props.repodesc
-                        ),
-                        _react2.default.createElement(
-                            "p",
-                            null,
-                            "Watchers Count: ",
-                            this.props.repowatcher
-                        )
-                    );
-                }
+                    ),
+                    _react2.default.createElement(
+                        "p",
+                        null,
+                        "Github ID: ",
+                        this.props.repoid
+                    ),
+                    _react2.default.createElement(
+                        "p",
+                        null,
+                        "Description: ",
+                        this.props.repodesc
+                    ),
+                    _react2.default.createElement(
+                        "p",
+                        null,
+                        "Watchers Count: ",
+                        this.props.repowatcher
+                    )
+                );
             } else {
-                return _react2.default.createElement("div", { className: "removed-repo" });
+                // Unstared repo
+                return _react2.default.createElement(
+                    "div",
+                    { className: "col-xs-10 col-sm-9 col-md-8 col-lg-7" },
+                    _react2.default.createElement(
+                        "h3",
+                        null,
+                        this.props.reponame,
+                        _react2.default.createElement(
+                            "a",
+                            { onClick: this.star, href: "#!" },
+                            _react2.default.createElement("span", { className: "glyphicon glyphicon-star-empty" })
+                        )
+                    ),
+                    _react2.default.createElement(
+                        "p",
+                        null,
+                        "Github ID: ",
+                        this.props.repoid
+                    ),
+                    _react2.default.createElement(
+                        "p",
+                        null,
+                        "Description: ",
+                        this.props.repodesc
+                    ),
+                    _react2.default.createElement(
+                        "p",
+                        null,
+                        "Watchers Count: ",
+                        this.props.repowatcher
+                    )
+                );
             }
         }
     }]);
@@ -1095,84 +1133,7 @@ var Repo = function (_React$Component) {
 module.exports = Repo;
 
 /***/ }),
-/* 15 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-var _md = __webpack_require__(33);
-
-var _md2 = _interopRequireDefault(_md);
-
-var _Validate = __webpack_require__(36);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function getUsername(id, tipper) {
-    var username = document.getElementById(id).value;
-    if ((0, _Validate.validateUsername)(username, "login-wrong-tip", "<div class='alert alert-danger' role='alert'>Please input your username</div>")) return username;else return false;
-}
-
-function getRawPassword(id, tipper) {
-    var e_password = document.getElementById(id);
-    if ((0, _Validate.validatePassword)(e_password.value, "wrong-tip", "<div class='alert alert-danger' role='alert'>Password too short</div>")) {
-        return e_password.value;
-    } else return false;
-}
-
-function getPassword(id, tipper) {
-    var e_password = document.getElementById(id);
-    if ((0, _Validate.validatePassword)(e_password.value, "login-wrong-tip", "<div class='alert alert-danger' role='alert'>Password too short</div>")) {
-        var encrypted = (0, _md2.default)(e_password.value);
-        e_password.value = encrypted;
-        return encrypted;
-    } else return false;
-}
-
-module.exports = { getUsername: getUsername, getPassword: getPassword, getRawPassword: getRawPassword };
-
-/***/ }),
 /* 16 */
-/***/ (function(module, exports) {
-
-var charenc = {
-  // UTF-8 encoding
-  utf8: {
-    // Convert a string to a byte array
-    stringToBytes: function(str) {
-      return charenc.bin.stringToBytes(unescape(encodeURIComponent(str)));
-    },
-
-    // Convert a byte array to a string
-    bytesToString: function(bytes) {
-      return decodeURIComponent(escape(charenc.bin.bytesToString(bytes)));
-    }
-  },
-
-  // Binary encoding
-  bin: {
-    // Convert a string to a byte array
-    stringToBytes: function(str) {
-      for (var bytes = [], i = 0; i < str.length; i++)
-        bytes.push(str.charCodeAt(i) & 0xFF);
-      return bytes;
-    },
-
-    // Convert a byte array to a string
-    bytesToString: function(bytes) {
-      for (var str = [], i = 0; i < bytes.length; i++)
-        str.push(String.fromCharCode(bytes[i]));
-      return str.join('');
-    }
-  }
-};
-
-module.exports = charenc;
-
-
-/***/ }),
-/* 17 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1182,43 +1143,20 @@ var _react = __webpack_require__(1);
 
 var _react2 = _interopRequireDefault(_react);
 
-var _reactDom = __webpack_require__(21);
+var _reactDom = __webpack_require__(20);
 
 var _reactDom2 = _interopRequireDefault(_reactDom);
 
-var _ReposStared = __webpack_require__(30);
+var _App = __webpack_require__(29);
 
-var _ReposStared2 = _interopRequireDefault(_ReposStared);
-
-var _ReposSearched = __webpack_require__(31);
-
-var _ReposSearched2 = _interopRequireDefault(_ReposSearched);
-
-var _Login = __webpack_require__(32);
-
-var _Login2 = _interopRequireDefault(_Login);
-
-var _Logout = __webpack_require__(37);
-
-var _Logout2 = _interopRequireDefault(_Logout);
-
-var _Register = __webpack_require__(38);
-
-var _Register2 = _interopRequireDefault(_Register);
+var _App2 = _interopRequireDefault(_App);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-// Export to Window
-window.login = _Login2.default;
-window.logout = _Logout2.default;
-window.register = _Register2.default;
-
-_reactDom2.default.render(_react2.default.createElement(_ReposStared2.default, null), document.getElementById("repo-star-show-block"));
-
-_reactDom2.default.render(_react2.default.createElement(_ReposSearched2.default, null), document.getElementById("repo-show-block"));
+_reactDom2.default.render(_react2.default.createElement(_App2.default, null), document.getElementById("root"));
 
 /***/ }),
-/* 18 */
+/* 17 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1246,7 +1184,7 @@ isValidElement:K,version:"16.2.0",__SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_F
 
 
 /***/ }),
-/* 19 */
+/* 18 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2611,7 +2549,7 @@ module.exports = react;
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(0)))
 
 /***/ }),
-/* 20 */
+/* 19 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2630,7 +2568,7 @@ module.exports = ReactPropTypesSecret;
 
 
 /***/ }),
-/* 21 */
+/* 20 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2668,15 +2606,15 @@ if (process.env.NODE_ENV === 'production') {
   // DCE check should happen before ReactDOM bundle executes so that
   // DevTools can report bad minification during injection.
   checkDCE();
-  module.exports = __webpack_require__(22);
+  module.exports = __webpack_require__(21);
 } else {
-  module.exports = __webpack_require__(25);
+  module.exports = __webpack_require__(24);
 }
 
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(0)))
 
 /***/ }),
-/* 22 */
+/* 21 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2912,7 +2850,7 @@ Z.injectIntoDevTools({findFiberByHostInstance:pb,bundleType:0,version:"16.2.0",r
 
 
 /***/ }),
-/* 23 */
+/* 22 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2927,7 +2865,7 @@ Z.injectIntoDevTools({findFiberByHostInstance:pb,bundleType:0,version:"16.2.0",r
  * @typechecks
  */
 
-var isNode = __webpack_require__(24);
+var isNode = __webpack_require__(23);
 
 /**
  * @param {*} object The object to check.
@@ -2940,7 +2878,7 @@ function isTextNode(object) {
 module.exports = isTextNode;
 
 /***/ }),
-/* 24 */
+/* 23 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2968,7 +2906,7 @@ function isNode(object) {
 module.exports = isNode;
 
 /***/ }),
-/* 25 */
+/* 24 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3002,8 +2940,8 @@ var containsNode = __webpack_require__(12);
 var focusNode = __webpack_require__(13);
 var emptyObject = __webpack_require__(4);
 var checkPropTypes = __webpack_require__(7);
-var hyphenateStyleName = __webpack_require__(26);
-var camelizeStyleName = __webpack_require__(28);
+var hyphenateStyleName = __webpack_require__(25);
+var camelizeStyleName = __webpack_require__(27);
 
 /**
  * WARNING: DO NOT manually require this module.
@@ -18370,7 +18308,7 @@ module.exports = reactDom;
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(0)))
 
 /***/ }),
-/* 26 */
+/* 25 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -18385,7 +18323,7 @@ module.exports = reactDom;
 
 
 
-var hyphenate = __webpack_require__(27);
+var hyphenate = __webpack_require__(26);
 
 var msPattern = /^ms-/;
 
@@ -18412,7 +18350,7 @@ function hyphenateStyleName(string) {
 module.exports = hyphenateStyleName;
 
 /***/ }),
-/* 27 */
+/* 26 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -18448,7 +18386,7 @@ function hyphenate(string) {
 module.exports = hyphenate;
 
 /***/ }),
-/* 28 */
+/* 27 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -18463,7 +18401,7 @@ module.exports = hyphenate;
 
 
 
-var camelize = __webpack_require__(29);
+var camelize = __webpack_require__(28);
 
 var msPattern = /^-ms-/;
 
@@ -18491,7 +18429,7 @@ function camelizeStyleName(string) {
 module.exports = camelizeStyleName;
 
 /***/ }),
-/* 29 */
+/* 28 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -18526,6 +18464,127 @@ function camelize(string) {
 module.exports = camelize;
 
 /***/ }),
+/* 29 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _react = __webpack_require__(1);
+
+var _react2 = _interopRequireDefault(_react);
+
+var _Navbar = __webpack_require__(30);
+
+var _Navbar2 = _interopRequireDefault(_Navbar);
+
+var _ReposSearched = __webpack_require__(34);
+
+var _ReposSearched2 = _interopRequireDefault(_ReposSearched);
+
+var _ReposStared = __webpack_require__(35);
+
+var _ReposStared2 = _interopRequireDefault(_ReposStared);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+/**
+ * App
+ */
+
+var App = function (_React$Component) {
+    _inherits(App, _React$Component);
+
+    function App(props) {
+        _classCallCheck(this, App);
+
+        var _this = _possibleConstructorReturn(this, (App.__proto__ || Object.getPrototypeOf(App)).call(this, props));
+
+        _this.afterLogin = _this.afterLogin.bind(_this);
+        _this.afterLogout = _this.afterLogout.bind(_this);
+        _this.afterStarChanged = _this.afterStarChanged.bind(_this);
+        _this.afterStarRefreshed = _this.afterStarRefreshed.bind(_this);
+
+        _this.state = {
+            isLogin: false,
+            username: "",
+            token: "",
+            refreshStar: false
+        };
+        return _this;
+    }
+
+    _createClass(App, [{
+        key: 'afterLogin',
+        value: function afterLogin(token, username) {
+            this.setState({
+                isLogin: true,
+                token: token,
+                username: username
+            });
+        }
+    }, {
+        key: 'afterLogout',
+        value: function afterLogout() {
+            this.setState({
+                isLogin: false,
+                token: "",
+                username: ""
+            });
+        }
+    }, {
+        key: 'afterStarChanged',
+        value: function afterStarChanged() {
+            this.setState({ refreshStar: true });
+        }
+    }, {
+        key: 'afterStarRefreshed',
+        value: function afterStarRefreshed() {
+            this.setState({ refreshStar: false });
+        }
+    }, {
+        key: 'render',
+        value: function render() {
+            return _react2.default.createElement(
+                'div',
+                null,
+                _react2.default.createElement(_Navbar2.default, { isLogin: this.state.isLogin,
+                    username: this.state.username,
+                    token: this.state.token,
+                    afterLoginAction: this.afterLogin,
+                    afterLogoutAction: this.afterLogout }),
+                _react2.default.createElement(
+                    'div',
+                    { className: 'container' },
+                    _react2.default.createElement(_ReposSearched2.default, {
+                        isLogin: this.state.isLogin,
+                        token: this.state.token,
+                        afterStarChanged: this.afterStarChanged }),
+                    _react2.default.createElement(_ReposStared2.default, {
+                        token: this.state.token,
+                        isLogin: this.state.isLogin,
+                        refresh: this.state.refreshStar,
+                        afterStarChanged: this.afterStarChanged,
+                        afterStarRefreshed: this.afterStarRefreshed })
+                )
+            );
+        }
+    }]);
+
+    return App;
+}(_react2.default.Component);
+
+module.exports = App;
+
+/***/ }),
 /* 30 */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -18538,9 +18597,9 @@ var _react = __webpack_require__(1);
 
 var _react2 = _interopRequireDefault(_react);
 
-var _Repo = __webpack_require__(14);
+var _md = __webpack_require__(31);
 
-var _Repo2 = _interopRequireDefault(_Repo);
+var _md2 = _interopRequireDefault(_md);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -18551,324 +18610,404 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
 /**
- * A class maintain a list of Repos
+ * Navbar
  */
 
-var ReposStared = function (_React$Component) {
-    _inherits(ReposStared, _React$Component);
+var Navbar = function (_React$Component) {
+    _inherits(Navbar, _React$Component);
 
-    function ReposStared(props) {
-        _classCallCheck(this, ReposStared);
+    function Navbar(props) {
+        _classCallCheck(this, Navbar);
 
-        var _this = _possibleConstructorReturn(this, (ReposStared.__proto__ || Object.getPrototypeOf(ReposStared)).call(this, props));
+        var _this = _possibleConstructorReturn(this, (Navbar.__proto__ || Object.getPrototypeOf(Navbar)).call(this, props));
 
-        _this.refresh = _this.refresh.bind(_this);
+        _this.register = _this.register.bind(_this);
+        _this.login = _this.login.bind(_this);
+        _this.logout = _this.logout.bind(_this);
+        _this.changeUsername = _this.changeUsername.bind(_this);
+        _this.changePassword = _this.changePassword.bind(_this);
+
+        // Init state
         _this.state = {
-            repoCounter: 0,
-            repoItems: []
+            username: props.username,
+            password: "",
+            errorMessage: ""
         };
-        _this.refresh();
         return _this;
     }
 
-    _createClass(ReposStared, [{
-        key: 'refresh',
-        value: function refresh() {
-            $.post("./api/querystar.php", {}, function (data, status) {
+    _createClass(Navbar, [{
+        key: 'register',
+        value: function register() {
+            this.setState({ errorMessage: "Register..." });
+            if (this.state.username.length < 4) {
+                this.setState({ errorMessage: "Username too short" });
+                return;
+            }
+            if (this.state.password.length < 4) {
+                this.setState({ errorMessage: "Password too short" });
+                return;
+            }
+            $.post("./api/register.php", {
+                username: this.state.username,
+                password: this.state.password
+            }, function (data, status) {
                 if (status) {
                     var result = JSON.parse(data);
                     if (result["state"] == "0") {
-                        this.setState({
-                            repoItems: result["info"],
-                            repoICounters: result.length
-                        });
+                        // Hide Modal
+                        $('#RegisterModal').modal("hide");
+                        $('#LoginModal').modal("hide");
+                        this.login();
+                    } else {
+                        this.setState({ errorMessage: result["description"] });
                     }
+                } else {
+                    alert("Internet Error");
                 }
             }.bind(this));
         }
     }, {
+        key: 'login',
+        value: function login() {
+            this.setState({ errorMessage: "Login..." });
+            if (this.state.username.length < 4) {
+                this.setState({ errorMessage: "Username too short" });
+                return;
+            }
+            if (this.state.password.length < 4) {
+                this.setState({ errorMessage: "Password too short" });
+                return;
+            }
+            $.post("./api/login.php", {
+                username: this.state.username,
+                password: (0, _md2.default)(this.state.password)
+            }, function (data, status) {
+                if (status) {
+                    var result = JSON.parse(data);
+                    if (result["state"] == "0") {
+                        // Hide Modal
+                        $('#LoginModal').modal("hide");
+                        this.props.afterLoginAction(result["description"], this.state.username);
+                    } else {
+                        this.setState({ errorMessage: result["description"] });
+                    }
+                } else {
+                    alert("Internet Error");
+                }
+            }.bind(this));
+        }
+    }, {
+        key: 'logout',
+        value: function logout() {
+            $.get("./api/logout.php?token=" + this.props.token, function (data, status) {
+                if (status) {
+                    var result = JSON.parse(data);
+                    if (result["state"] == "0") {
+                        this.props.afterLogoutAction();
+                    } else {
+                        alert(result["description"]);
+                    }
+                } else {
+                    alert("Internet Error When logout");
+                }
+            }.bind(this));
+        }
+    }, {
+        key: 'changeUsername',
+        value: function changeUsername(event) {
+            this.setState({ username: event.target.value });
+        }
+    }, {
+        key: 'changePassword',
+        value: function changePassword(event) {
+            this.setState({ password: event.target.value });
+        }
+    }, {
         key: 'render',
         value: function render() {
-            var repoItems = this.state.repoItems;
-            return _react2.default.createElement(
-                'div',
-                { className: 'panel panel-warning' },
-                _react2.default.createElement(
+            if (this.props.isLogin == true) {
+                return _react2.default.createElement(
                     'div',
-                    { className: 'panel-heading' },
-                    'Star',
+                    null,
                     _react2.default.createElement(
-                        'a',
-                        { href: '#!', onClick: this.refresh },
-                        'Refresh'
-                    )
-                ),
-                _react2.default.createElement(
-                    'div',
-                    { className: 'panel-body' },
-                    _react2.default.createElement(
-                        'div',
-                        { className: 'row' },
+                        'nav',
+                        { className: 'navbar navbar-inverse navbar-static-top' },
                         _react2.default.createElement(
                             'div',
-                            { hidden: 'hidden' },
-                            this.state.repoCounter
-                        ),
-                        repoItems.map(function (repo) {
-                            return _react2.default.createElement(_Repo2.default, { key: repo.id,
-                                repoid: repo.id,
-                                reponame: repo.name,
-                                repodesc: repo.description,
-                                repowatcher: repo.watchers,
-                                repostar: repo.star,
-                                reposearched: false,
-                                reporefresh: this.refresh.bind(this) });
-                        }.bind(this))
-                    )
-                )
-            );
-        }
-    }]);
-
-    return ReposStared;
-}(_react2.default.Component);
-
-module.exports = ReposStared;
-
-/***/ }),
-/* 31 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-var _react = __webpack_require__(1);
-
-var _react2 = _interopRequireDefault(_react);
-
-var _Repo = __webpack_require__(14);
-
-var _Repo2 = _interopRequireDefault(_Repo);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-/**
- * A class maintain a list of Repos
- */
-
-var ReposStared = function (_React$Component) {
-    _inherits(ReposStared, _React$Component);
-
-    function ReposStared(props) {
-        _classCallCheck(this, ReposStared);
-
-        var _this = _possibleConstructorReturn(this, (ReposStared.__proto__ || Object.getPrototypeOf(ReposStared)).call(this, props));
-
-        _this.flow = _this.flow.bind(_this);
-        _this.search = _this.search.bind(_this);
-        _this.changeUser = _this.changeUser.bind(_this);
-        _this.state = {
-            repoCounter: 0,
-            repoItems: [],
-            repoUser: "",
-            init: true,
-            userexist: false,
-            avatar: ""
-        };
-        return _this;
-    }
-
-    _createClass(ReposStared, [{
-        key: 'changeUser',
-        value: function changeUser(event) {
-            this.setState({ repoUser: event.target.value });
-        }
-    }, {
-        key: 'flow',
-        value: function flow() {
-            // Get Avatar link
-            if (this.state.repoUser.length > 0) {
-                $.post("./api/queryavatar.php", {
-                    user: this.state.repoUser
-                }, function (data, status) {
-                    if (status) {
-                        var result = JSON.parse(data);
-                        if (result["state"] == "0") {
-                            this.setState({
-                                avatar: result["info"],
-                                userexist: true
-                            });
-                            this.search();
-                        }
-                    }
-                }.bind(this));
-            }
-        }
-    }, {
-        key: 'search',
-        value: function search() {
-            if (this.state.repoUser.length > 0 && this.state.userexist == true) {
-                $.post("./api/query.php", {
-                    user: this.state.repoUser
-                }, function (data, status) {
-                    if (status) {
-                        var result = JSON.parse(data);
-                        if (result["state"] == "0") {
-                            this.setState({
-                                repoItems: result["info"],
-                                repoCounter: result['info'].length,
-                                repoUser: name,
-                                init: false
-                            });
-                        }
-                    }
-                }.bind(this));
-            }
-        }
-    }, {
-        key: 'refresh',
-        value: function refresh() {
-            // Nothing to do
-        }
-    }, {
-        key: 'render',
-        value: function render() {
-            var repoItems = this.state.repoItems;
-            return _react2.default.createElement(
-                'div',
-                { className: 'repos-searched container' },
-                _react2.default.createElement(
-                    'div',
-                    { className: 'row' },
-                    _react2.default.createElement(
-                        'div',
-                        { className: 'input-group col-xs-10 col-sm-8 col-md-6 col-lg-6' },
-                        _react2.default.createElement(
-                            'span',
-                            { className: 'input-group-addon' },
-                            'Github User'
-                        ),
-                        _react2.default.createElement('input', { type: 'text', id: 'input-search-username', onChange: this.changeUser,
-                            className: 'form-control', value: this.state.repoUser }),
-                        _react2.default.createElement(
-                            'span',
-                            { className: 'input-group-btn' },
+                            { className: 'container' },
                             _react2.default.createElement(
-                                'button',
-                                { className: 'btn btn-default', type: 'button',
-                                    onClick: this.flow },
-                                'Hack It!'
+                                'div',
+                                { className: 'navbar-header' },
+                                _react2.default.createElement(
+                                    'button',
+                                    { type: 'button', className: 'navbar-toggle collapsed', 'data-toggle': 'collapse', 'data-target': '#navbar', 'aria-expanded': 'false', 'aria-controls': 'navbar' },
+                                    _react2.default.createElement(
+                                        'span',
+                                        { className: 'sr-only' },
+                                        'Toggle navigation'
+                                    ),
+                                    _react2.default.createElement('span', { className: 'icon-bar' }),
+                                    _react2.default.createElement('span', { className: 'icon-bar' }),
+                                    _react2.default.createElement('span', { className: 'icon-bar' })
+                                ),
+                                _react2.default.createElement(
+                                    'a',
+                                    { className: 'navbar-brand', href: 'index.php' },
+                                    'Test Moodwalk - Inoki'
+                                )
+                            ),
+                            _react2.default.createElement(
+                                'div',
+                                { id: 'navbar', className: 'navbar-collapse collapse' },
+                                _react2.default.createElement(
+                                    'ul',
+                                    { className: 'nav navbar-nav navbar-right' },
+                                    _react2.default.createElement(
+                                        'li',
+                                        null,
+                                        _react2.default.createElement(
+                                            'a',
+                                            { href: '#!' },
+                                            _react2.default.createElement('span', { className: 'glyphicon glyphicon-user', 'aria-hidden': 'true' }),
+                                            ' ',
+                                            this.state.username
+                                        )
+                                    ),
+                                    _react2.default.createElement(
+                                        'li',
+                                        null,
+                                        _react2.default.createElement(
+                                            'a',
+                                            { href: '#!', onClick: this.logout },
+                                            'Logout'
+                                        )
+                                    )
+                                )
+                            )
+                        )
+                    )
+                );
+            } else {
+                return _react2.default.createElement(
+                    'div',
+                    null,
+                    _react2.default.createElement(
+                        'nav',
+                        { className: 'navbar navbar-inverse navbar-static-top' },
+                        _react2.default.createElement(
+                            'div',
+                            { className: 'container' },
+                            _react2.default.createElement(
+                                'div',
+                                { className: 'navbar-header' },
+                                _react2.default.createElement(
+                                    'button',
+                                    { type: 'button', className: 'navbar-toggle collapsed', 'data-toggle': 'collapse', 'data-target': '#navbar', 'aria-expanded': 'false', 'aria-controls': 'navbar' },
+                                    _react2.default.createElement(
+                                        'span',
+                                        { className: 'sr-only' },
+                                        'Toggle navigation'
+                                    ),
+                                    _react2.default.createElement('span', { className: 'icon-bar' }),
+                                    _react2.default.createElement('span', { className: 'icon-bar' }),
+                                    _react2.default.createElement('span', { className: 'icon-bar' })
+                                ),
+                                _react2.default.createElement(
+                                    'a',
+                                    { className: 'navbar-brand', href: 'index.php' },
+                                    'Test Moodwalk - Inoki'
+                                )
+                            ),
+                            _react2.default.createElement(
+                                'div',
+                                { id: 'navbar', className: 'navbar-collapse collapse' },
+                                _react2.default.createElement(
+                                    'ul',
+                                    { className: 'nav navbar-nav navbar-right' },
+                                    _react2.default.createElement(
+                                        'li',
+                                        null,
+                                        _react2.default.createElement(
+                                            'a',
+                                            { 'data-toggle': 'modal', 'data-target': '#LoginModal' },
+                                            _react2.default.createElement('span', { className: 'glyphicon glyphicon-log-in', 'aria-hidden': 'true' }),
+                                            ' Login'
+                                        )
+                                    ),
+                                    _react2.default.createElement(
+                                        'li',
+                                        null,
+                                        _react2.default.createElement(
+                                            'a',
+                                            { 'data-toggle': 'modal', 'data-target': '#RegisterModal' },
+                                            _react2.default.createElement('span', { className: 'glyphicon glyphicon-user', 'aria-hidden': 'true' }),
+                                            ' Register'
+                                        )
+                                    )
+                                )
                             )
                         )
                     ),
                     _react2.default.createElement(
                         'div',
-                        { className: 'input-group col-xs-10 col-sm-8 col-md-6 col-lg-6' },
-                        _react2.default.createElement('img', { hidden: this.state.init == true ? "hidden" : "",
-                            src: this.state.avatar })
+                        { className: 'modal fade', id: 'LoginModal', tabIndex: '-1', role: 'dialog', 'aria-labelledby': 'LoginModalLabel' },
+                        _react2.default.createElement(
+                            'div',
+                            { className: 'modal-dialog modal-sm', role: 'document' },
+                            _react2.default.createElement(
+                                'div',
+                                { className: 'modal-content' },
+                                _react2.default.createElement(
+                                    'div',
+                                    { className: 'modal-header' },
+                                    _react2.default.createElement(
+                                        'button',
+                                        { type: 'button', className: 'close', 'data-dismiss': 'modal', 'aria-label': 'Close' },
+                                        _react2.default.createElement(
+                                            'span',
+                                            { 'aria-hidden': 'true' },
+                                            '\xD7'
+                                        )
+                                    ),
+                                    _react2.default.createElement(
+                                        'h4',
+                                        { className: 'modal-title', id: 'LoginModalLabel' },
+                                        'Login'
+                                    )
+                                ),
+                                _react2.default.createElement(
+                                    'div',
+                                    { className: 'modal-body' },
+                                    _react2.default.createElement(
+                                        'form',
+                                        null,
+                                        _react2.default.createElement(
+                                            'label',
+                                            null,
+                                            'Username\uFF1A'
+                                        ),
+                                        _react2.default.createElement('input', { type: 'text', className: 'form-control', onChange: this.changeUsername, value: this.state.username }),
+                                        _react2.default.createElement(
+                                            'label',
+                                            null,
+                                            'Password\uFF1A'
+                                        ),
+                                        _react2.default.createElement('input', { type: 'password', className: 'form-control', onChange: this.changePassword, value: this.state.password })
+                                    ),
+                                    _react2.default.createElement('br', null),
+                                    _react2.default.createElement(
+                                        'div',
+                                        null,
+                                        this.state.errorMessage
+                                    )
+                                ),
+                                _react2.default.createElement(
+                                    'div',
+                                    { className: 'modal-footer' },
+                                    _react2.default.createElement(
+                                        'button',
+                                        { type: 'button', className: 'btn btn-default', 'data-dismiss': 'modal' },
+                                        'Cancel'
+                                    ),
+                                    _react2.default.createElement(
+                                        'button',
+                                        { type: 'button', className: 'btn btn-primary', onClick: this.login },
+                                        'Login'
+                                    )
+                                )
+                            )
+                        )
                     ),
                     _react2.default.createElement(
                         'div',
-                        { className: 'col-xs-12 col-sm-12 col-md-6 col-lg-6' },
-                        this.state.init == false ? "Repo Count: " + this.state.repoCounter : " "
+                        { className: 'modal fade', id: 'RegisterModal', tabIndex: '-1', role: 'dialog', 'aria-labelledby': 'LoginModalLabel' },
+                        _react2.default.createElement(
+                            'div',
+                            { className: 'modal-dialog modal-sm', role: 'document' },
+                            _react2.default.createElement(
+                                'div',
+                                { className: 'modal-content' },
+                                _react2.default.createElement(
+                                    'div',
+                                    { className: 'modal-header' },
+                                    _react2.default.createElement(
+                                        'button',
+                                        { type: 'button', className: 'close', 'data-dismiss': 'modal', 'aria-label': 'Close' },
+                                        _react2.default.createElement(
+                                            'span',
+                                            { 'aria-hidden': 'true' },
+                                            '\xD7'
+                                        )
+                                    ),
+                                    _react2.default.createElement(
+                                        'h4',
+                                        { className: 'modal-title', id: 'RegisterModalLabel' },
+                                        'Register'
+                                    )
+                                ),
+                                _react2.default.createElement(
+                                    'div',
+                                    { className: 'modal-body' },
+                                    _react2.default.createElement(
+                                        'form',
+                                        null,
+                                        _react2.default.createElement(
+                                            'label',
+                                            null,
+                                            'Username\uFF1A'
+                                        ),
+                                        _react2.default.createElement('input', { type: 'text', className: 'form-control', onChange: this.changeUsername, value: this.state.username }),
+                                        _react2.default.createElement(
+                                            'label',
+                                            null,
+                                            'Password\uFF1A'
+                                        ),
+                                        _react2.default.createElement('input', { type: 'password', className: 'form-control', onChange: this.changePassword, value: this.state.password })
+                                    ),
+                                    _react2.default.createElement('br', null),
+                                    _react2.default.createElement(
+                                        'div',
+                                        null,
+                                        this.state.errorMessage
+                                    )
+                                ),
+                                _react2.default.createElement(
+                                    'div',
+                                    { className: 'modal-footer' },
+                                    _react2.default.createElement(
+                                        'button',
+                                        { type: 'button', className: 'btn btn-default', 'data-dismiss': 'modal' },
+                                        'Cancel'
+                                    ),
+                                    _react2.default.createElement(
+                                        'button',
+                                        { type: 'button', className: 'btn btn-success', onClick: this.register },
+                                        'Register'
+                                    )
+                                )
+                            )
+                        )
                     )
-                ),
-                _react2.default.createElement(
-                    'div',
-                    { className: 'row' },
-                    repoItems.map(function (repo) {
-                        return _react2.default.createElement(_Repo2.default, { key: repo.id,
-                            repoid: repo.id,
-                            reponame: repo.name,
-                            repodesc: repo.description,
-                            repowatcher: repo.watchers,
-                            repostar: repo.star,
-                            reposearched: true,
-                            reporefresh: this.refresh.bind(this) });
-                    }.bind(this))
-                )
-            );
+                );
+            }
         }
     }]);
 
-    return ReposStared;
+    return Navbar;
 }(_react2.default.Component);
 
-module.exports = ReposStared;
+module.exports = Navbar;
 
 /***/ }),
-/* 32 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-var _Getter = __webpack_require__(15);
-
-/**
- * Login Module
- */
-function login() {
-    document.getElementById("comfirm-login-button").setAttribute("disabled", "disabled");
-    document.getElementById("login-wrong-tip").innerHTML = "<div class='alert alert-info' role='alert'>Loging...</div>";
-    var username = (0, _Getter.getUsername)("input-login-username");
-    var password = (0, _Getter.getPassword)("input-login-password");
-    if (username && password) {
-        $.post("./api/login.php", {
-            username: username,
-            password: password
-        }, onLoginReceive);
-    } else {
-        resetLogin();
-    }
-}
-
-function onLoginReceive(data, status) {
-    if (status) {
-        var result = JSON.parse(data);
-        if (result["state"] == "0") {
-            document.cookie = "uuid = " + result["description"];
-            window.location.reload();
-        } else {
-            document.getElementById("login-wrong-tip").innerHTML = "<div class='alert alert-danger' role='alert'>" + result["description"] + "</div>";
-        }
-    } else {
-        alert("Internet Error");
-        document.getElementById("login-wrong-tip").innerHTML = "";
-    }
-    cleanPassword();
-    document.getElementById("comfirm-login-button").removeAttribute("disabled");
-}
-
-function cleanPassword() {
-    var e_password = document.getElementById("input-login-password");
-    if (e_password) e_password.value = "";
-}
-
-function resetLogin() {
-    cleanPassword();
-    document.getElementById("comfirm-login-button").removeAttribute("disabled");
-}
-
-module.exports = login;
-
-/***/ }),
-/* 33 */
+/* 31 */
 /***/ (function(module, exports, __webpack_require__) {
 
 (function(){
-  var crypt = __webpack_require__(34),
-      utf8 = __webpack_require__(16).utf8,
-      isBuffer = __webpack_require__(35),
-      bin = __webpack_require__(16).bin,
+  var crypt = __webpack_require__(32),
+      utf8 = __webpack_require__(14).utf8,
+      isBuffer = __webpack_require__(33),
+      bin = __webpack_require__(14).bin,
 
   // The core
   md5 = function (message, options) {
@@ -19027,7 +19166,7 @@ module.exports = login;
 
 
 /***/ }),
-/* 34 */
+/* 32 */
 /***/ (function(module, exports) {
 
 (function() {
@@ -19129,7 +19268,7 @@ module.exports = login;
 
 
 /***/ }),
-/* 35 */
+/* 33 */
 /***/ (function(module, exports) {
 
 /*!
@@ -19156,123 +19295,331 @@ function isSlowBuffer (obj) {
 
 
 /***/ }),
-/* 36 */
+/* 34 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-function validateUsername(username, error_message_block_id, error_message) {
-    if (username.length < 1) {
-        document.getElementById(error_message_block_id).innerHTML = error_message;
-        //"<div class='alert alert-danger' role='alert'>Please input your username</div>";
-        return false;
-    }
-    return true;
-}
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-function validatePassword(password, error_message_block_id, error_message) {
-    if (password.length < 4) {
-        document.getElementById(error_message_block_id).innerHTML = error_message;
-        //"<div class='alert alert-danger' role='alert'>Password too short</div>";
-        return false;
-    }
-    return true;
-}
+var _react = __webpack_require__(1);
 
-function validateLength(text, name, min_length, error_message_id, error_message) {
-    if (text.length < min_length) {
-        document.getElementById(error_message_block_id).innerHTML = error_message;
-        //"<div class='alert alert-danger' role='alert'>"+ name +" length not match</div>";
-        return false;
-    }
-    return true;
-}
+var _react2 = _interopRequireDefault(_react);
 
-module.exports = { validateUsername: validateUsername, validatePassword: validatePassword, validateLength: validateLength };
+var _Repo = __webpack_require__(15);
 
-/***/ }),
-/* 37 */
-/***/ (function(module, exports, __webpack_require__) {
+var _Repo2 = _interopRequireDefault(_Repo);
 
-"use strict";
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
 /**
- * Logout Module
+ * A class maintain a list of Repos
  */
-function logout() {
-    $.get("./api/logout.php", onLogoutReceive);
-}
 
-function onLogoutReceive(data, status) {
-    if (status) {
-        var result = JSON.parse(data);
-        if (result["state"] == "0") {
-            document.cookie = "uuid = ''";
-            window.location.reload();
-        }
-    } else {
-        alert("Internet Error When logout");
+var ReposStared = function (_React$Component) {
+    _inherits(ReposStared, _React$Component);
+
+    function ReposStared(props) {
+        _classCallCheck(this, ReposStared);
+
+        var _this = _possibleConstructorReturn(this, (ReposStared.__proto__ || Object.getPrototypeOf(ReposStared)).call(this, props));
+
+        _this.flow = _this.flow.bind(_this);
+        _this.search = _this.search.bind(_this);
+        _this.changeUser = _this.changeUser.bind(_this);
+        _this.state = {
+            repoCounter: 0,
+            repoItems: [],
+            repoUser: "",
+            init: true,
+            userexist: false,
+            avatar: "./res/img/github.png",
+            hidden: "none"
+        };
+        return _this;
     }
-}
 
-module.exports = logout;
+    _createClass(ReposStared, [{
+        key: 'changeUser',
+        value: function changeUser(event) {
+            this.setState({ repoUser: event.target.value });
+        }
+    }, {
+        key: 'flow',
+        value: function flow() {
+            // Get Avatar link
+            if (this.state.repoUser.length > 0 && this.props.isLogin == true) {
+                $.post("./api/queryavatar.php", {
+                    user: this.state.repoUser,
+                    token: this.props.token
+                }, function (data, status) {
+                    if (status) {
+                        var result = JSON.parse(data);
+                        if (result["state"] == "0") {
+                            this.setState({
+                                avatar: result["info"],
+                                userexist: true
+                            });
+                            this.search();
+                        }
+                    }
+                }.bind(this));
+            }
+        }
+    }, {
+        key: 'search',
+        value: function search() {
+            if (this.state.repoUser.length > 0 && this.state.userexist == true && this.props.isLogin == true) {
+                $.post("./api/query.php", {
+                    user: this.state.repoUser,
+                    token: this.props.token
+                }, function (data, status) {
+                    if (status) {
+                        var result = JSON.parse(data);
+                        if (result["state"] == "0") {
+                            this.setState({
+                                repoItems: result["info"],
+                                repoCounter: result['info'].length,
+                                repoUser: name,
+                                init: false
+                            });
+                        }
+                    }
+                }.bind(this));
+            }
+        }
+    }, {
+        key: 'render',
+        value: function render() {
+            var question = void 0;
+            if (this.props.isLogin == true) question = "So, If you have already logged in, Which one do you want to hack ?";else question = "I'm sorry but the first thing you have to do is logging in";
+
+            var repoItems = this.state.repoItems;
+            return _react2.default.createElement(
+                'div',
+                { className: 'panel panel-success' },
+                _react2.default.createElement(
+                    'div',
+                    { className: 'panel-heading' },
+                    'Stared Repos'
+                ),
+                _react2.default.createElement(
+                    'div',
+                    { className: 'panel-body' },
+                    _react2.default.createElement(
+                        'div',
+                        { className: 'row' },
+                        _react2.default.createElement(
+                            'div',
+                            { className: 'repos-searched container' },
+                            _react2.default.createElement(
+                                'div',
+                                { className: 'row' },
+                                _react2.default.createElement(
+                                    'div',
+                                    { className: 'col-xs-12 col-sm-6 col-md-4 col-lg-3' },
+                                    _react2.default.createElement(
+                                        'div',
+                                        { id: 'talkbubble-top', className: 'hidden-sm hidden-md hidden-lg' },
+                                        _react2.default.createElement(
+                                            'p',
+                                            null,
+                                            this.state.question
+                                        )
+                                    ),
+                                    _react2.default.createElement('img', { src: this.state.avatar, alt: 'Github Repos Displayer' })
+                                ),
+                                _react2.default.createElement(
+                                    'div',
+                                    { className: 'col-xs-12 col-sm-6 col-md-6 col-lg-5' },
+                                    _react2.default.createElement(
+                                        'div',
+                                        { id: 'talkbubble-right', className: 'hidden-xs' },
+                                        _react2.default.createElement(
+                                            'p',
+                                            null,
+                                            question
+                                        )
+                                    )
+                                ),
+                                _react2.default.createElement(
+                                    'div',
+                                    { className: 'input-group col-xs-10 col-sm-8 col-md-6 col-lg-6' },
+                                    _react2.default.createElement(
+                                        'span',
+                                        { className: 'input-group-addon' },
+                                        'Github User'
+                                    ),
+                                    _react2.default.createElement('input', { type: 'text', id: 'input-search-username', onChange: this.changeUser,
+                                        className: 'form-control', value: this.state.repoUser }),
+                                    _react2.default.createElement(
+                                        'span',
+                                        { className: 'input-group-btn' },
+                                        _react2.default.createElement(
+                                            'button',
+                                            { className: 'btn btn-default', type: 'button',
+                                                onClick: this.flow },
+                                            'Hack It!'
+                                        )
+                                    )
+                                ),
+                                _react2.default.createElement(
+                                    'div',
+                                    { className: 'col-xs-12 col-sm-12 col-md-6 col-lg-6' },
+                                    this.state.init == false ? "Repo Count: " + this.state.repoCounter : " "
+                                )
+                            ),
+                            _react2.default.createElement(
+                                'div',
+                                { className: 'row' },
+                                repoItems.map(function (repo) {
+                                    return _react2.default.createElement(_Repo2.default, { key: repo.id,
+                                        isLogin: this.props.isLogin,
+                                        token: this.props.token,
+                                        repoid: repo.id,
+                                        reponame: repo.name,
+                                        repodesc: repo.description,
+                                        repowatcher: repo.watchers,
+                                        repostar: repo.star,
+                                        reporefresh: this.props.afterStarChanged });
+                                }.bind(this))
+                            )
+                        )
+                    )
+                )
+            );
+        }
+    }]);
+
+    return ReposStared;
+}(_react2.default.Component);
+
+module.exports = ReposStared;
 
 /***/ }),
-/* 38 */
+/* 35 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-var _Getter = __webpack_require__(15);
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _react = __webpack_require__(1);
+
+var _react2 = _interopRequireDefault(_react);
+
+var _Repo = __webpack_require__(15);
+
+var _Repo2 = _interopRequireDefault(_Repo);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
 /**
- * Register Module
+ * A class maintain a list of Repos
  */
-function register() {
-    document.getElementById("comfirm-button").setAttribute("disabled", "disabled");
-    document.getElementById("wrong-tip").innerHTML = "<div class='alert alert-info' role='alert'>Registering...</div>";
-    var username = (0, _Getter.getUsername)("input-register-username");
-    var password = (0, _Getter.getRawPassword)("input-register-password");
-    if (username && password) {
-        $.post("./api/register.php", {
-            username: username,
-            password: password
-        }, onRegisterReceive);
-    } else {
-        resetRegister();
-    }
-}
 
-function onRegisterReceive(data, status) {
-    if (status) {
-        var result = JSON.parse(data);
-        if (result["state"] == "0") {
-            alert("Register OK, You can login now.");
-        } else {
-            document.getElementById("wrong-tip").innerHTML = "<div class='alert alert-danger' role='alert'>" + result["description"] + "</div>";
+var ReposStared = function (_React$Component) {
+    _inherits(ReposStared, _React$Component);
+
+    function ReposStared(props) {
+        _classCallCheck(this, ReposStared);
+
+        var _this = _possibleConstructorReturn(this, (ReposStared.__proto__ || Object.getPrototypeOf(ReposStared)).call(this, props));
+
+        _this.refresh = _this.refresh.bind(_this);
+        _this.state = {
+            repoCounter: 0,
+            repoItems: []
+        };
+        return _this;
+    }
+
+    _createClass(ReposStared, [{
+        key: 'refresh',
+        value: function refresh(token) {
+            $.post("./api/querystar.php", {
+                token: token
+            }, function (data, status) {
+                if (status) {
+                    var result = JSON.parse(data);
+                    if (result["state"] == "0") {
+                        this.setState({
+                            repoItems: result["info"],
+                            repoICounters: result.length
+                        });
+                        this.props.afterStarRefreshed();
+                    }
+                }
+            }.bind(this));
         }
-    } else {
-        alert("Internet Error");
-        document.getElementById("wrong-tip").innerHTML = "";
-    }
-    cleanPassword();
-    document.getElementById("confirm-button").removeAttribute("disabled");
-}
+    }, {
+        key: 'componentWillReceiveProps',
+        value: function componentWillReceiveProps(nextProps) {
+            if (this.props.refresh == false && nextProps.refresh == true) {
+                this.refresh(this.props.token);
+            }
+            if (this.props.isLogin == false && nextProps.isLogin == true) {
+                this.refresh(nextProps.token);
+            }
+        }
+    }, {
+        key: 'render',
+        value: function render() {
+            var repoItems = this.state.repoItems;
+            return _react2.default.createElement(
+                'div',
+                { className: 'panel panel-warning' },
+                _react2.default.createElement(
+                    'div',
+                    { className: 'panel-heading' },
+                    'Stared Repos'
+                ),
+                _react2.default.createElement(
+                    'div',
+                    { className: 'panel-body' },
+                    _react2.default.createElement(
+                        'div',
+                        { className: 'row' },
+                        _react2.default.createElement(
+                            'div',
+                            { hidden: 'hidden' },
+                            this.state.repoCounter
+                        ),
+                        repoItems.map(function (repo) {
+                            return _react2.default.createElement(_Repo2.default, { key: repo.id,
+                                isLogin: this.props.isLogin,
+                                token: this.props.token,
+                                repoid: repo.id,
+                                reponame: repo.name,
+                                repodesc: repo.description,
+                                repowatcher: repo.watchers,
+                                repostar: repo.star,
+                                reporefresh: this.props.afterStarChanged });
+                        }.bind(this))
+                    )
+                )
+            );
+        }
+    }]);
 
-function cleanPassword() {
-    var e_password = document.getElementById("register-login-password");
-    if (e_password) e_password.value = "";
-}
+    return ReposStared;
+}(_react2.default.Component);
 
-function resetRegister() {
-    cleanPassword();
-    document.getElementById("comfirm-button").removeAttribute("disabled");
-}
-
-module.exports = register;
+module.exports = ReposStared;
 
 /***/ })
 /******/ ]);

@@ -17,77 +17,76 @@ class Repo extends React.Component{
     }
 
     star(){
-        $.post("./api/addstar.php",
-            {
-                id: this.props.repoid
-            },
-            function (data, status){
-                if (status){
-                    let result = JSON.parse(data);
-                    if (result["state"] == "0"){
-                        // Star OK
-                        this.setState({isStared: true});
-                    }
-                }
-            }.bind(this)
-        );
-    }
-    
-    unstar(){
-        $.post("./api/unstar.php",
-            {
-                id: this.props.repoid
-            },
-            function (data, status){
-                if (status){
-                    let result = JSON.parse(data);
-                    if (result["state"] == "0"){
-                        // Unstar OK
-                        this.setState({isStared: false});
-                        if (this.props.reposearched == false){
-                            // Hide
-                            this.setState({display: false});
+        if (this.props.isLogin == true){
+            $.post("./api/addstar.php",
+                {
+                    id: this.props.repoid,
+                    token: this.props.token
+                },
+                function (data, status){
+                    if (status){
+                        let result = JSON.parse(data);
+                        if (result["state"] == "0"){
+                            // Star OK
+                            this.setState({isStared: true});
                             this.props.reporefresh();
                         }
                     }
-                }
-            }.bind(this)
-        );
+                }.bind(this)
+            );
+        }
+    }
+    
+    unstar(){
+        if (this.props.isLogin == true){
+            $.post("./api/unstar.php",
+                {
+                    id: this.props.repoid,
+                    token: this.props.token
+                },
+                function (data, status){
+                    if (status){
+                        let result = JSON.parse(data);
+                        if (result["state"] == "0"){
+                            // Unstar OK
+                            this.setState({isStared: false});
+                            this.props.reporefresh();
+                        }
+                    }
+                }.bind(this)
+            );
+        }
     }
 
     render(){
-        if (this.state.display == true){
-            if (this.state.isStared == true){
-                // Stared repo
-                return (
-                    <div className="col-xs-10 col-sm-9 col-md-8 col-lg-7">
-                        <h3>{ this.props.reponame }
-                            <a onClick={this.unstar} href="#!">
-                                <span className="glyphicon glyphicon-star"></span>
-                            </a>
-                        </h3>
-                        <p>Github ID: { this.props.repoid }</p>
-                        <p>Description: { this.props.repodesc }</p>
-                        <p>Watchers Count: { this.props.repowatcher }</p>
-                    </div>
-                );
-            } else {
-                // Unstared repo
-                return (
-                    <div className="col-xs-10 col-sm-9 col-md-8 col-lg-7">
-                        <h3>{ this.props.reponame } 
-                            <a onClick={this.star} href="#!">
-                                <span className="glyphicon glyphicon-star-empty"></span>
-                            </a>
-                        </h3>
-                        <p>Github ID: { this.props.repoid }</p>
-                        <p>Description: { this.props.repodesc }</p>
-                        <p>Watchers Count: { this.props.repowatcher }</p>
-                    </div>
-                );
-            }
+        if (this.state.isStared == true){
+            // Stared repo
+            return (
+                <div className="col-xs-10 col-sm-9 col-md-8 col-lg-7">
+                    <h3>{ this.props.reponame }
+                        <a onClick={this.unstar} href="#!">
+                            <span className="glyphicon glyphicon-star"></span>
+                        </a>
+                    </h3>
+                    <p>Github ID: { this.props.repoid }</p>
+                    <p>Description: { this.props.repodesc }</p>
+                    <p>Watchers Count: { this.props.repowatcher }</p>
+                </div>
+            );
         } else {
-            return (<div className="removed-repo"></div>);
+            // Unstared repo
+            return (
+                <div className="col-xs-10 col-sm-9 col-md-8 col-lg-7">
+                    <h3>{ this.props.reponame } 
+                        <a onClick={this.star} href="#!">
+                            <span className="glyphicon glyphicon-star-empty"></span>
+                        </a>
+                    </h3>
+                    <p>Github ID: { this.props.repoid }</p>
+                    <p>Description: { this.props.repodesc }</p>
+                    <p>Watchers Count: { this.props.repowatcher }</p>
+                </div>
+            );
         }
     }
 }
