@@ -18,7 +18,7 @@ For each repository, display “name”, “description”, “watcher count”.
 - The logged user can see all previously starred repositories.
 - Nice UI/UX (Twitter bootstrap ? https://getbootstrap.com/).
 - Add tests (Rspec, cucumber).
-- 
+
 ##### Technologies to use:
 - Ruby on Rails (Preferable but Optional).
 - ReactJS (Optional).
